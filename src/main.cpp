@@ -22,6 +22,8 @@ int finalState = 1;
 
 int state = 1;
 
+bool pressed = false;
+
 String _word = "";
 
 void setup() {
@@ -69,12 +71,14 @@ void loop() {
 
   int character = getPressedButton();
 
-  if(character != LAMBDA_CHAR) {
+  if(character != LAMBDA_CHAR && pressed == false) {
     int port = consumeWord(character);
     _word += character;
     handleReceiveSignal();
     digitalWrite(port, LOW);
   }
+
+  pressed = character != LAMBDA_CHAR;
 
   display.setCursor(0,0);
   display.print("E: q");
@@ -89,7 +93,16 @@ void loop() {
   display.print(state == finalState ? "S" : "N");
 
   display.setCursor(0,1);
-  display.print(_word);
+  for(int i = 0; i < 16; i++) {
+    int length = _word.length();
 
-  delay(100);
+    if(length < 16) {
+      display.print(_word);
+      break;
+    }
+
+    display.print(_word[length - 16 + i]);
+  }
+
+  delay(10);
 }
